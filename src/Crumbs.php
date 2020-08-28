@@ -21,8 +21,7 @@ class Crumbs
         'blog' => 'Blog',
         'blog_url' => '',
         'seperator' => '/',
-        'class' => 'crumbs',
-        'element' => 'nav'
+        'class' => 'crumbs'
     ];
 
     /**
@@ -63,24 +62,29 @@ class Crumbs
         $breadcrumbs = $this->getBreadcrumbs();
         $count = count($breadcrumbs);
         $i = 1;
-        $el = $this->options['element'];
 
         // Start the element
-        $html = sprintf('<%s class="%s">', $el, $this->options['class']);
+        $html = sprintf('<nav class="%s" aria-label="Breadcrumb"><ol>', $this->options['class']);
 
         foreach ($breadcrumbs as $crumb) {
-            // if a list wrap each item in a <li>
-            if ($el === 'ul' || $el === 'ol') {
-                $html .= '<li>';
-            }
+            // wrap each item in a <li>
+            $html .= '<li>';
 
             // If crumb has a url make a link
             if ($crumb['url']) {
-                $html .= sprintf('<a href="%s">%s</a>', $crumb['url'], $crumb['title']);
+                if ($i == $count) {
+                    $html .= sprintf('<a href="%s" aria-current="page">%s</a>', $crumb['url'], $crumb['title']);
+                } else {
+                    $html .= sprintf('<a href="%s">%s</a>', $crumb['url'], $crumb['title']);
+                }
 
             // Otherwise make a span
             } else {
-                $html .= sprintf('<span>%s</span>', $crumb['title']);
+                if ($i == $count) {
+                    $html .= sprintf('<span aria-current="page">%s</span>', $crumb['title']);
+                } else {
+                    $html .= sprintf('<span>%s</span>', $crumb['title']);
+                }
             }
 
             // Add seperators
@@ -88,16 +92,14 @@ class Crumbs
                 $html .= sprintf('<span class="sep">%s</span>', $this->options['seperator']);
             }
 
-            // if list, close <li> tag
-            if ($el === 'ul' || $el === 'ol') {
-                $html .= '</li>';
-            }
+            // close <li> tag
+            $html .= '</li>';
 
             $i++;
         }
 
         // close the element
-        $html .= sprintf('</%s>', $el);
+        $html .= sprintf('</ol></nav>');
 
         echo $html;
     }
